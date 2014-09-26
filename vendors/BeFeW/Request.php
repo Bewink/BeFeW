@@ -2,8 +2,6 @@
 
 namespace vendors\BeFeW;
 
-use vendors\BeFeW;
-
 class Request extends Utils {
     public static function getPostVar($id, $default = null, $secure = 'mysql') {
         return parent::getVar($_POST[$id], $default, $secure);

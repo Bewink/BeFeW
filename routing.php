@@ -1,27 +1,27 @@
 <?php
 
 use vendors\BeFeW\Request as Request;
-use vendors\BeFeW\Logger as Logger;
+use vendors\BeFeW\Response as Response;
 
 $url = Request::getGetVar('page', 'index', true);
-if(DEBUG) {
-    Logger::info('URL received : '.$url);
-}
 
+/* Add your routes here */
 $routes = array(
-    'index' => 'Acme/Home/HomeController.php'
+    'index' => 'Acme/Home/HomeController.php',
+    'acme/home' => 'Acme/Home/HomeController.php',
 );
 
-if(Request::getVar($routes[$url]) != null) {
-    if(DEBUG) {
-        Logger::info('Route found by URL');
+$routeFound = false;
+foreach($routes as $key => $path) {
+    if(strpos($url, $key) === 0) {
+        $page = substr($url, strlen($key) + 1);
+        $tplpath = BEFEW_BASE_URL.'src/'.dirname($path).'/View/';
+        require('src/'.$routes[$key]);
+        $routeFound = true;
+        break;
     }
+}
 
-    require('src/'.$routes[$url]);
-} else {
-    if(DEBUG) {
-        Logger::warning('No route found, calling 404...');
-    }
-
-    require('app/404.php');
+if($routeFound == false) {
+    Response::throwStatus(404);
 }

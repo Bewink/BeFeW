@@ -4,26 +4,30 @@ namespace vendors\BeFeW;
 
 class Logger {
     public static function info($message, $die = false) {
-        if($die) {
-            die('<p class="befew-logger-info">'.$message.'</p>');
-        } else {
-            echo '<p class="befew-logger-info">'.$message.'</p>';
-        }
+        self::display('info', $message, $die);
     }
 
     public static function warning($message, $die = false) {
-        if($die) {
-            die('<p class="befew-logger-warning">'.$message.'</p>');
-        } else {
-            echo '<p class="befew-logger-warning">'.$message.'</p>';
-        }
+        self::display('warning', $message, $die);
     }
 
     public static function error($message, $die = false) {
-        if($die) {
-            die('<p class="befew-logger-error">'.$message.'</p>');
+        self::display('error', $message, $die);
+    }
+
+    public static function display($level, $message, $die = false) {
+        if(is_array($message)) {
+            if ($die) {
+                die('<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>');
+            } else {
+                echo '<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>';
+            }
         } else {
-            echo '<p class="befew-logger-error">'.$message.'</p>';
+            if ($die) {
+                die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
+            } else {
+                echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
+            }
         }
     }
 }

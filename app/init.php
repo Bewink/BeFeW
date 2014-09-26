@@ -12,17 +12,17 @@ try {
     echo 'WARNING: Database connection error: ' . $e->getMessage();
 }
 
-function autoloader($className) {
-    $className = str_replace("_", "\\", $className);
-    $className = ltrim($className, '\\');
+function autoloader($classname) {
+    $classname = str_replace("_", "\\", $classname);
+    $classname = ltrim($classname, '\\');
     $fileName = '';
-    if ($lastNsPos = strripos($className, '\\'))
+    if ($lastNsPos = strripos($classname, '\\'))
     {
-        $namespace = substr($className, 0, $lastNsPos);
-        $className = substr($className, $lastNsPos + 1);
+        $namespace = substr($classname, 0, $lastNsPos);
+        $classname = substr($classname, $lastNsPos + 1);
         $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
 
     require $fileName;
 }
