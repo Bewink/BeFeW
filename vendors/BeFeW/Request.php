@@ -1,37 +1,15 @@
 <?php
 
-namespace Request;
+namespace BeFeW\Request;
 
-class Request {
+use BeFeW\Utils\Utils as Utils;
+
+class Request extends Utils {
     public static function getPostVar($id, $default = null, $secure = 'mysql') {
-        if(!isset($_POST[$id])) {
-            return $default;
-        } else if(empty($_POST[$id])) {
-            return $default;
-        } else {
-            if($secure == 'mysql') {
-                return mysql_real_escape_string($_POST[$id]);
-            } else if($secure == 'html') {
-                return htmlentities($_POST[$id]);
-            } else {
-                return $_POST[$id];
-            }
-        }
+        return parent::getVar($_POST[$id], $default, $secure);
     }
 
     public static function getGetVar($id, $default = null, $secure = 'mysql') {
-        if(!isset($_GET[$id])) {
-            return $default;
-        } else if(empty($_GET[$id])) {
-            return $default;
-        } else {
-            if($secure == 'mysql') {
-                return mysql_real_escape_string($_GET[$id]);
-            } else if($secure == 'html') {
-                return htmlentities($_GET[$id]);
-            } else {
-                return $_GET[$id];
-            }
-        }
+        return parent::getVar($_GET[$id], $default, $secure);
     }
 }
