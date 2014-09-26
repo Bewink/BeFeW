@@ -1,6 +1,7 @@
 <?php
 
-use BeFeW\Request\Request as Request;
+use vendors\BeFeW\Request as Request;
+use vendors\BeFeW\Logger as Logger;
 
 $url = Request::getGetVar('page', 'index');
 
@@ -9,11 +10,23 @@ $routes = array(
 );
 
 if(Request::getVar($routes[$url]) != null) {
-    require($routes[$url]);
+    if(DEBUG) {
+        Logger::info('Route found by URL');
+    }
+
+    require('src/'.$routes[$url]);
 } else {
     if(Request::getVar($routes['index']) != null) {
-        require($routes['index']);
+        if(DEBUG) {
+            Logger::info('Route index used');
+        }
+
+        require('src/'.$routes['index']);
     } else {
+        if(DEBUG) {
+            Logger::warning('No route found, calling 404...');
+        }
+
         require('app/404.php');
     }
 }

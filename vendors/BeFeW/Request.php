@@ -1,8 +1,8 @@
 <?php
 
-namespace BeFeW\Request;
+namespace vendors\BeFeW;
 
-use BeFeW\Utils\Utils as Utils;
+use vendors\BeFeW;
 
 class Request extends Utils {
     public static function getPostVar($id, $default = null, $secure = 'mysql') {

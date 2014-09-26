@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." name="sakurahx" default="deploy">
+	<target name="deploy">
+        <copy todir="J:\Projets\Web\befew" overwrite="true">
+            <fileset dir="${basedir}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+    </target>
+</project>

@@ -1,18 +1,16 @@
 <?php
 
-namespace BeFeW\Utils;
+namespace vendors\BeFeW;
 
 class Utils {
-    public static function getVar(&$var, $default = null, $secure = 'mysql') {
+    public static function getVar(&$var, $default = null, $secure = false) {
         if(!isset($var)) {
             return $default;
         } else if(empty($var)) {
             return $default;
         } else {
-            if($secure == 'mysql') {
-                return mysql_real_escape_string($var);
-            } else if($secure == 'html') {
-                return htmlentities($var);
+            if($secure) {
+                return htmlspecialchars($var);
             } else {
                 return $var;
             }
