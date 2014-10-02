@@ -121,11 +121,11 @@ class Template {
             extract($vars);
         }
 
-        $title = $this->title;
-        $styles = $this->styles;
-        $headJavascripts = $this->headJavascripts;
-        $footJavascripts = $this->footJavascripts;
-        $headTags = $this->headTags;
+        $befewHeadTitle = $this->title;
+        $befewHeadStyles = $this->styles;
+        $befewHeadJavascripts = $this->headJavascripts;
+        $befewFootJavascripts = $this->footJavascripts;
+        $befewHeadTags = $this->headTags;
 
         foreach($this->head as $h) {
             include($h);

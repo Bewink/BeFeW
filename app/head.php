@@ -4,27 +4,27 @@
     <head>
         <meta charset="utf-8" />
 
-        <title>BeFeW <?php if(Utils::getVar($title) != null) echo $title ?></title>
+        <title>BeFeW <?php if(Utils::getVar($befewHeadTitle) != null) echo $befewHeadTitle ?></title>
 
         <?php
-            if(Utils::getVar($headTags) != null) {
-                foreach($headTags as $headTag) {
-                    echo $headTag;
+            if(Utils::getVar($befewHeadTags) != null) {
+                foreach($befewHeadTags as $befewHeadTag) {
+                    echo $befewHeadTag;
                 }
             }
 
-            if(Utils::getVar($styles) != null) {
-                foreach($styles as $style) {
+            if(Utils::getVar($befewHeadStyles) != null) {
+                foreach($befewHeadStyles as $befewHeadStyle) {
                     ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo $style; ?>" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $befewHeadStyle; ?>" />
                     <?php
                 }
             }
 
-            if(Utils::getVar($headJavascripts) != null) {
-                foreach($headJavascripts as $headJavascript) {
+            if(Utils::getVar($befewHeadJavascripts) != null) {
+                foreach($befewHeadJavascripts as $befewHeadJavascript) {
                     ?>
-        <script type="text/javascript" src="<?php echo $headJavascript; ?>"></script>
+        <script type="text/javascript" src="<?php echo $befewHeadJavascript; ?>"></script>
                     <?php
                 }
             }

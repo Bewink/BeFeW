@@ -1,9 +1,9 @@
 <?php
     use vendors\BeFeW\Utils as Utils;
-    if(Utils::getVar($footJavascripts) != null) {
-        foreach($footJavascripts as $footJavascript) {
+    if(Utils::getVar($befewFootJavascripts) != null) {
+        foreach($befewFootJavascripts as $befewFootJavascript) {
             ?>
-        <script type="text/javascript" src="<?php echo $footJavascript; ?>"></script>
+        <script type="text/javascript" src="<?php echo $befewFootJavascript; ?>"></script>
             <?php
         }
     }

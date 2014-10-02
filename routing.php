@@ -7,8 +7,8 @@ $url = Request::getGetVar('page', 'index', true);
 
 /* Add your routes here */
 $routes = array(
-    'index' => 'Acme/Home/HomeController.php',
-    'acme/home' => 'Acme/Home/HomeController.php',
+    'index' => 'Home/HomeController.php',
+    'home' => 'Home/HomeController.php',
 );
 
 $routeFound = false;

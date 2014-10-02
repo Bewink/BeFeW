@@ -15,18 +15,19 @@ class Logger {
         self::display('error', $message, $die);
     }
 
-    public static function display($level, $message, $die = false) {
-        if(is_array($message)) {
-            if ($die) {
-                die('<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>');
-            } else {
-                echo '<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>';
-            }
-        } else {
+    public static function display($level, $message, $die = false)
+    {
+        if (is_string($message)) {
             if ($die) {
                 die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
             } else {
                 echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
+            }
+        } else {
+            if ($die) {
+                die('<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>');
+            } else {
+                echo '<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>';
             }
         }
     }

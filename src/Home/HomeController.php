@@ -5,6 +5,7 @@ use vendors\BeFeW\Template as Template;
 
 /* Use $page for the switch, and $tplpath for the template engine */
 switch($page) {
+    case '':
     case 'home':
         $tpl = new Template($tplpath);
         $tpl->setTitle('| Home');

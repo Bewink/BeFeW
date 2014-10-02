@@ -15,16 +15,16 @@ try {
 function autoloader($classname) {
     $classname = str_replace("_", "\\", $classname);
     $classname = ltrim($classname, '\\');
-    $fileName = '';
+    $filename = '';
     if ($lastNsPos = strripos($classname, '\\'))
     {
         $namespace = substr($classname, 0, $lastNsPos);
         $classname = substr($classname, $lastNsPos + 1);
-        $fileName = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+        $filename = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
     }
-    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
+    $filename .= str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
 
-    require $fileName;
+    require $filename;
 }
 
 spl_autoload_register('autoloader');
