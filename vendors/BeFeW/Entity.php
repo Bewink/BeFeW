@@ -2,7 +2,7 @@
 
 namespace vendors\BeFeW;
 
-class Entity {
+abstract class Entity {
     protected $befewAttributes = array(
         'id' => array(
             'type' => 'int',

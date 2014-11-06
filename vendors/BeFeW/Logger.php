@@ -19,15 +19,15 @@ class Logger {
     {
         if (is_string($message)) {
             if ($die) {
-                die('<p class="befew-logger-' . $level . '"><pre>' . $message . '</pre></p>');
+                die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
             } else {
-                echo '<p class="befew-logger-' . $level . '"><pre>' . $message . '</pre></p>';
+                echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
             }
         } else {
             if ($die) {
-                die('<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>');
+                die('<pre class="befew-logger-' . $level . '">' . var_dump($message) . '</pre>');
             } else {
-                echo '<p class="befew-logger-' . $level . '"><pre>' . var_dump($message) . '</pre></p>';
+                echo '<pre class="befew-logger-' . $level . '">' . var_dump($message) . '</pre>';
             }
         }
     }
