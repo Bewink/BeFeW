@@ -19,9 +19,9 @@ class Logger {
     {
         if (is_string($message)) {
             if ($die) {
-                die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
+                die('<p class="befew-logger-' . $level . '"><pre>' . $message . '</pre></p>');
             } else {
-                echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
+                echo '<p class="befew-logger-' . $level . '"><pre>' . $message . '</pre></p>';
             }
         } else {
             if ($die) {

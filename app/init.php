@@ -12,6 +12,8 @@ try {
     echo 'WARNING: Database connection error: ' . $e->getMessage();
 }
 
+$DBH->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
 function autoloader($classname) {
     $classname = str_replace("_", "\\", $classname);
     $classname = ltrim($classname, '\\');
