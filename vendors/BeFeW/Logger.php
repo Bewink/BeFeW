@@ -24,10 +24,14 @@ class Logger {
                 echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
             }
         } else {
+            ob_start();
+            var_dump($message);
+            $debug = ob_get_clean();
+
             if ($die) {
-                die('<pre class="befew-logger-' . $level . '">' . var_dump($message) . '</pre>');
+                die('<div class="befew-logger-' . $level . '">' . $debug . '</div>');
             } else {
-                echo '<pre class="befew-logger-' . $level . '">' . var_dump($message) . '</pre>';
+                echo '<div class="befew-logger-' . $level . '">' . $debug . '</div>';
             }
         }
     }

@@ -16,7 +16,7 @@ switch($page) {
         $user = new User();
         $user->setPseudo('Elian');
         $user->save();
-
+        Logger::info($user);
         $tpl->render('index.php');
         break;
 
