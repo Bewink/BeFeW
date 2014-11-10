@@ -1,3 +1,15 @@
 p {
     color: blue;
 }
+
+.befew-logger-info {
+    display: inline-block;
+    padding: 20px;
+    background: #EFEFEF;
+    margin: 0;
+}
+
+.befew-logger-info pre {
+    margin: 0;
+    padding: 0;
+}

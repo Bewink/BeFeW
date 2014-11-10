@@ -56,4 +56,8 @@ class Utils {
     public static function getSQLDefaultLengthForType($type) {
         return (isset(self::$SQLMAP[$type])) ? self::$SQLMAP[$type] : null;
     }
+
+    public static function getQueryWithValues($query, $values) {
+        return strtr($query, array_map(function($v) {return '`' . $v . '`';}, $values));
+    }
 }

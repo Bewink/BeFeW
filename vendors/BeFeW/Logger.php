@@ -19,9 +19,17 @@ class Logger {
     {
         if (is_string($message)) {
             if ($die) {
-                die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
+                if(strpos($message, "\n") !== false) {
+                    die('<pre class="befew-logger-' . $level . '">' . $message . '</pre>');
+                } else {
+                    die('<p class="befew-logger-' . $level . '">' . $message . '</p>');
+                }
             } else {
-                echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
+                if(strpos($message, "\n") !== false) {
+                    echo '<pre class="befew-logger-' . $level . '">' . $message . '</pre>';
+                } else {
+                    echo '<p class="befew-logger-' . $level . '">' . $message . '</p>';
+                }
             }
         } else {
             ob_start();

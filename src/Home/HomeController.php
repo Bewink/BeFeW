@@ -2,8 +2,6 @@
 
 use vendors\BeFeW\Response as Response;
 use vendors\BeFeW\Template as Template;
-use src\Home\Entity\User as User;
-use vendors\BeFeW\Logger as Logger;
 
 /* Use $page for the switch, and $tplpath for the template engine */
 switch($page) {
@@ -13,10 +11,6 @@ switch($page) {
         $tpl->setTitle('| Home');
         $tpl->addStyle('default.css');
 
-        $user = new User();
-        $user->setPseudo('Elian');
-        $user->save();
-        Logger::info($user);
         $tpl->render('index.php');
         break;
 
