@@ -2,7 +2,8 @@
 
 namespace vendors\BeFeW;
 
-class Entity {
+class Entity
+{
     private $befewLinks = array();
     private $befewAttributes = array(
         'id' => array(
@@ -12,27 +13,29 @@ class Entity {
         )
     );
     private $befewDefaultAttributes = array(
-        'type'          => 'varchar',
-        'default'       => null,
-        'collation'     => 'utf8_general_ci',
-        'attributes'    => null,
-        'null'          => false,
-        'index'         => null,
+        'type' => 'varchar',
+        'default' => null,
+        'collation' => 'utf8_general_ci',
+        'attributes' => null,
+        'null' => false,
+        'index' => null,
         'autoIncrement' => false,
-        'comments'      => null
+        'comments' => null
     );
     private $befewTableCollation = 'utf8_general_ci';
 
     protected $id;
 
-    public function __construct($id = null) {
-        if($id != null) {
+    public function __construct($id = null)
+    {
+        if ($id != null) {
             $this->find($id);
         }
     }
 
-    public function __call($method, $args) {
-        if(substr($method, 0, 3) == "get") {
+    public function __call($method, $args)
+    {
+        if (substr($method, 0, 3) == "get") {
             return $this->get(lcfirst(str_replace('get', '', $method)));
         } else if (substr($method, 0, 3) == "set") {
             return $this->set(lcfirst(str_replace('set', '', $method)), $args[0]);
@@ -41,56 +44,66 @@ class Entity {
         }
     }
 
-    protected function get($element) {
+    protected function get($element)
+    {
         return $this->{$element};
     }
 
-    protected function set($element, $value) {
+    protected function set($element, $value)
+    {
         return $this->{$element} = $value;
     }
 
-    protected function getTableName() {
+    protected function getTableName()
+    {
         return strtolower(substr(get_called_class(), strrpos(get_called_class(), '\\') + 1));
     }
 
-    protected function setTableCollation($collation) {
+    protected function setTableCollation($collation)
+    {
         $this->befewTableCollation = $collation;
     }
 
-    protected function getTableCollation() {
+    protected function getTableCollation()
+    {
         return $this->befewTableCollation;
     }
 
-    protected function registerAttribute($name, $settings) {
+    protected function registerAttribute($name, $settings)
+    {
         $this->befewAttributes[$name] = $settings;
     }
 
-    protected function registerAttributes($set) {
-        foreach($set as $name => $settings) {
+    protected function registerAttributes($set)
+    {
+        foreach ($set as $name => $settings) {
             $this->registerAttribute($name, $settings);
         }
     }
 
-    protected function registerLink($link) {
+    protected function registerLink($link)
+    {
         $this->befewLinks[] = $link;
     }
 
-    protected function registerLinks($set) {
+    protected function registerLinks($set)
+    {
         $this->befewLinks = array_merge($this->befewLinks[], $set);
     }
 
-    public function find($id) {
+    public function find($id)
+    {
         global $DBH;
 
         $query = $DBH->prepare('SELECT * FROM ' . $this->getTableName() . ' WHERE id = :id');
 
-        if($query) {
+        if ($query) {
             $query->execute(array(':id' => $id));
             $datas = $query->fetch();
 
             foreach ($datas as $key => $value) {
                 if (!is_int($key)) {
-                    if(substr($key, 0, 3) == 'id_') {
+                    if (substr($key, 0, 3) == 'id_') {
                         $child = new \ReflectionObject($this);
                         $key = substr($key, 3);
                         $objectName = $child->getNamespaceName() . '\\' . ucfirst($key);
@@ -107,19 +120,20 @@ class Entity {
         return false;
     }
 
-    public function save() {
+    public function save()
+    {
         global $DBH;
 
-        if($this->id != null) {
+        if ($this->id != null) {
             $q = 'UPDATE ' . $this->getTableName() . ' SET ';
             $i = 0;
 
             foreach ($this as $key => $value) {
-                if(substr($key, 0, 5) != 'befew') {
-                    if($i > 0) {
+                if (substr($key, 0, 5) != 'befew') {
+                    if ($i > 0) {
                         $q .= ', ';
                     }
-                    if(in_array($key, $this->befewLinks)) {
+                    if (in_array($key, $this->befewLinks)) {
                         $q .= 'id_' . $key . ' = :' . $key;
                     } else {
                         $q .= $key . ' = :' . $key;
@@ -134,11 +148,11 @@ class Entity {
             $i = 0;
             $q = 'INSERT INTO ' . $this->getTableName() . ' (';
             foreach ($this as $key => $value) {
-                if(substr($key, 0, 5) != 'befew') {
-                    if($i > 0) {
+                if (substr($key, 0, 5) != 'befew') {
+                    if ($i > 0) {
                         $q .= ', ';
                     }
-                    if(in_array($key, $this->befewLinks)) {
+                    if (in_array($key, $this->befewLinks)) {
                         $q .= 'id_' . $key;
                     } else {
                         $q .= $key;
@@ -151,8 +165,8 @@ class Entity {
             $i = 0;
             $q .= ') VALUES(';
             foreach ($this as $key => $value) {
-                if(substr($key, 0, 5) != 'befew') {
-                    if($i > 0) {
+                if (substr($key, 0, 5) != 'befew') {
+                    if ($i > 0) {
                         $q .= ', ';
                     }
                     $q .= ':' . $key;
@@ -167,8 +181,8 @@ class Entity {
         $values = array();
 
         foreach ($this as $key => $value) {
-            if(substr($key, 0, 5) != 'befew') {
-                if(in_array($key, $this->befewLinks)) {
+            if (substr($key, 0, 5) != 'befew') {
+                if (in_array($key, $this->befewLinks)) {
                     $values[':' . $key] = $value->getId();
                 } else {
                     $values[':' . $key] = $value;
@@ -182,7 +196,7 @@ class Entity {
             $query->execute($values);
             return true;
         } catch (\PDOException $e) {
-            if(DEBUG) {
+            if (DEBUG) {
                 Logger::error($e->errorInfo[2]);
                 Logger::error('For more informations, you can take a look at the query : ');
                 Logger::error(Utils::getQueryWithValues($q, $values));
@@ -191,53 +205,59 @@ class Entity {
         }
     }
 
-    public function drop() {
+    public function drop()
+    {
         global $DBH;
 
-        return (bool) $DBH->query('DROP TABLE ' . $this->getTableName());
+        return (bool)$DBH->query('DROP TABLE ' . $this->getTableName());
     }
 
-    public function uninstall() {
+    public function uninstall()
+    {
         $child = new \ReflectionObject($this);
 
         $this->drop();
         unlink($child->getFileName());
     }
 
-    public function delete() {
-        if($this->id != null) {
+    public function delete()
+    {
+        if ($this->id != null) {
             global $DBH;
 
-            return (bool) $DBH->query('DELETE FROM ' . $this->getTableName() . ' WHERE id=' . $this->id);
+            return (bool)$DBH->query('DELETE FROM ' . $this->getTableName() . ' WHERE id=' . $this->id);
         } else {
             return true;
         }
     }
 
-    public function isTableCreated() {
+    public function isTableCreated()
+    {
         global $DBH;
 
         $results = $DBH->query('SHOW TABLES LIKE "' . $this->getTableName() . '"');
 
-        if(!$results) {
+        if (!$results) {
             Logger::error(print_r($dbh->errorInfo(), true));
-        } if($results->rowCount() > 0){
+        }
+        if ($results->rowCount() > 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    public function tableMatches($repair = false) {
+    public function tableMatches($repair = false)
+    {
         $errors = array();
         $index = 0;
 
-        if(!$this->isTableCreated()) {
+        if (!$this->isTableCreated()) {
             $index = (isset($errors[$index])) ? $index + 1 : $index;
             $errors[$index]['query'] = $this->createTable(true);
 
-            if($repair) {
-                if(!$this->createTable()) {
+            if ($repair) {
+                if (!$this->createTable()) {
                     $errors[$index]['error'] = 'Process error: table `' . $this->getTableName() . '` could not be created';
                 }
             } else {
@@ -250,45 +270,45 @@ class Entity {
             $datas = $query->fetchAll();
             $fields = array();
 
-            for($i = 0; $i < count($datas); $i++) {
+            for ($i = 0; $i < count($datas); $i++) {
                 $field = $datas[$i];
                 $fieldNameInClass = (substr($field['Field'], 0, 3) == 'id_') ? substr($field['Field'], 3) : $field['Field'];
                 $fields[] = $fieldNameInClass;
 
-                if(!property_exists($this, $fieldNameInClass)) {
+                if (!property_exists($this, $fieldNameInClass)) {
                     $index = (isset($errors[$index])) ? $index + 1 : $index;
                     $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` DROP `' . $field['Field'] . '`';
 
-                    if($repair) {
-                        if(!$DBH->exec($errors[$index]['query'])) {
+                    if ($repair) {
+                        if (!$DBH->exec($errors[$index]['query'])) {
                             $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` could not be deleted';
                         }
                     } else {
                         $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` was found in table `' . $this->getTableName() . '` but doesn\'t exist in class `' . get_called_class() . '`';
-                        $errors[$index]['fix'] = 'Remove the field from the table';
+                        $errors[$index]['fix'] = 'Remove the field `' . $field['Field'] . '` from the table';
                     }
                 } else {
                     $structure = $this->getFieldStructure($field['Field']);
 
-                    if($field['Type'] != $structure['type'] . $structure['length']) {
+                    if ($field['Type'] != $structure['type'] . $structure['length']) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = $this->getFieldStructure($fieldNameInClass, true);
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
                                 $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` type could not be modified';
                             }
                         } else {
                             $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` is `' . $field['Type'] . '` in table `' . $this->getTableName() . '`, but is `' . $structure['type'] . $structure['length'] . '` in class `' . get_called_class() . '`';
-                            $errors[$index]['fix'] = 'Modify the type of the field. WARNING: This can cause data loss !';
+                            $errors[$index]['fix'] = 'Modify the type of the field `' . $field['Field'] . '`. WARNING: This can cause data loss !';
                         }
                     }
-                    if(($field['Null'] == 'NO' AND $structure['null'] == true) OR ($field['Null'] != 'NO' AND $structure['null'] == false)) {
+                    if (($field['Null'] == 'NO' AND $structure['null'] == true) OR ($field['Null'] != 'NO' AND $structure['null'] == false)) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = $this->getFieldStructure($fieldNameInClass, true);
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
                                 $errors[$index]['error'] = 'Process error: null option for field `' . $field['Field'] . '` could not be modified';
                             }
                         } else {
@@ -296,16 +316,16 @@ class Entity {
                             $errors[$index]['fix'] = 'Make the field `' . $field['Field'] . '` ' . (($structure['null']) ? 'NULL' : 'NOT NULL');
                         }
                     }
-                    if((empty($field['Key']) AND $structure['index'] != null) OR (!empty($field['Key']) AND $structure['index'] == null)) {
+                    if (!in_array($fieldNameInClass, $this->befewLinks) && ((empty($field['Key']) AND $structure['index'] != null) OR (!empty($field['Key']) AND $structure['index'] == null))) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        if($structure['index'] == null) {
+                        if ($structure['index'] == null) {
                             $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` DROP PRIMARY KEY';
                         } else {
                             $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` ADD PRIMARY KEY(`' . $field['Field'] . '`)';
                         }
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
                                 $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` keys could not be modified';
                             }
                         } else {
@@ -313,44 +333,48 @@ class Entity {
                             $errors[$index]['fix'] = 'Make the field `' . $field['Field'] . '` ' . (($structure['index'] == null) ? 'not `' . $field['Key'] . '`' : $structure['index']);
                         }
                     }
-                    if($field['Default'] != $structure['default']) {
+                    if ($field['Default'] != $structure['default']) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = $this->getFieldStructure($fieldNameInClass, true);
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
                                 $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` default value could not be modified';
                             }
                         } else {
                             $errors[$index]['error'] = 'Database error: default values in table `' . $this->getTableName() . '` and in class `' . get_called_class() . '` doesn\'t match for field `' . $field['Field'] . '`';
-                            $errors[$index]['fix'] = 'Modify the field default value';
+                            $errors[$index]['fix'] = 'Modify the field `' . $field['Field'] . '` default value';
                         }
                     }
-                    if(($field['Extra'] == 'auto_increment' AND $structure['autoIncrement'] == false) OR ($field['Extra'] != 'auto_increment' AND $structure['autoIncrement'] == true)) {
+                    if (($field['Extra'] == 'auto_increment' AND $structure['autoIncrement'] == false) OR ($field['Extra'] != 'auto_increment' AND $structure['autoIncrement'] == true)) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = $this->getFieldStructure($fieldNameInClass, true);
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
                                 $errors[$index]['error'] = 'Process error: auto increment for field `' . $field['Field'] . '` could not be ' . (($structure['autoIncrement']) ? 'set' : 'removed');
                             }
                         } else {
                             $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` is ' . (($field['Extra'] == 'auto_increment') ? 'set' : 'not set') . ' to auto increment in table `' . $this->getTableName() . '`, but is ' . (($structure['autoIncrement']) ? 'set' : 'not set') . ' to auto increment in class `' . get_called_class() . '`';
-                            $errors[$index]['fix'] = (($structure['autoIncrement']) ? 'Set' : 'Remove') . ' auto increment for this field';
+                            $errors[$index]['fix'] = (($structure['autoIncrement']) ? 'Set' : 'Remove') . ' auto increment for the field `' . $field['Field'] . '`';
                         }
                     }
                 }
             }
 
-            foreach($this as $key => $value) {
-                if(substr($key, 0, 5) != 'befew') {
-                    if(!in_array($key, $fields)) {
+            foreach ($this as $key => $value) {
+                if (substr($key, 0, 5) != 'befew') {
+                    if (!in_array($key, $fields)) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
                         $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '`  ADD ' . $this->getFieldStructure($key, true);
 
-                        if($repair) {
-                            if(!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` could not be added';
+                        if(in_array($key, $this->befewLinks)) {
+                            $errors[$index]['query'] .= ';ALTER TABLE `' . $this->getTableName() . '` ADD  CONSTRAINT `' . $key . time() . '` FOREIGN KEY (`id_' . $key . '`) REFERENCES `' . $key . '`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;';
+                        }
+
+                        if ($repair) {
+                            if (!$DBH->exec($errors[$index]['query'])) {
+                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` could not be added : ' . "\n" . $DBH->errorInfo();
                             }
                         } else {
                             $errors[$index]['error'] = 'Database error: table `' . $this->getTableName() . '` is missing field `' . ((in_array($key, $this->befewLinks)) ? 'id_' . $key : $key) . '`';
@@ -364,33 +388,35 @@ class Entity {
         return $errors;
     }
 
-    public function getFieldStructure($field, $sql = false) {
-        if(Utils::getVar($this->befewAttributes[$field]) == null) {
+    public function getFieldStructure($field, $sql = false)
+    {
+        if (Utils::getVar($this->befewAttributes[$field]) == null) {
             $structure = $this->befewDefaultAttributes;
         } else {
             $structure = array_merge($this->befewDefaultAttributes, $this->befewAttributes[$field]);
         }
 
-        if(Utils::getVar($structure['length']) == null) {
+        if (Utils::getVar($structure['length']) == null) {
             $structure['length'] = Utils::getSQLDefaultLengthForType($structure['type']);
         }
 
         $structure['name'] = (in_array($field, $this->befewLinks)) ? 'id_' . $field : $field;
 
-        if($sql) {
-            return '`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL' : 'NOT NULL') . ' DEFAULT \'' . $structure['default'] . '\'' . (($structure['autoIncrement']) ? 'AUTO_INCREMENT' : '') . (($structure['index']) ? 'PRIMARY KEY' : '');
+        if ($sql) {
+            return '`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL ' : 'NOT NULL ') . (($structure['default'] != null) ? ' DEFAULT \'' . $structure['default'] . '\' ' : '') . (($structure['autoIncrement']) ? 'AUTO_INCREMENT ' : '') . (($structure['index']) ? 'PRIMARY KEY' : '');
         } else {
             return $structure;
         }
     }
 
-    public function createTable($queryOnly = false) {
-        if($queryOnly == true OR $this->isTableCreated() == false) {
+    public function createTable($queryOnly = false)
+    {
+        if ($queryOnly == true OR $this->isTableCreated() == false) {
             global $DBH;
 
-            foreach($this as $key => $value) {
-                if(substr($key, 0, 5) != 'befew') {
-                    $current = &$this->befewAttributes[$key];
+            foreach ($this as $key => $value) {
+                if (substr($key, 0, 5) != 'befew') {
+                    $current = & $this->befewAttributes[$key];
 
                     if (Utils::getVar($current) == null) {
                         $current = $this->befewDefaultAttributes;
@@ -413,8 +439,8 @@ class Entity {
             $primary = null;
             $foreign = array();
 
-            foreach($this->befewAttributes as $key => $value) {
-                if(in_array($key, $this->befewLinks)) {
+            foreach ($this->befewAttributes as $key => $value) {
+                if (in_array($key, $this->befewLinks)) {
                     $query .= '    `id_' . $key . '` int(11),' . "\n";
                     $foreign[] = $key;
                 } else {
@@ -448,23 +474,23 @@ class Entity {
                     }
                 }
             }
-            if($primary != null) {
+            if ($primary != null) {
                 $query .= '    PRIMARY KEY (`' . $primary . '`)';
 
-                if(count($foreign) > 0) {
+                if (count($foreign) > 0) {
                     $query .= ',';
                 }
 
                 $query .= "\n";
             }
-            if(count($foreign) > 0) {
-                if(count($foreign) == 1) {
+            if (count($foreign) > 0) {
+                if (count($foreign) == 1) {
                     $query .= '    FOREIGN KEY (`id_' . $foreign[0] . '`) REFERENCES `' . $foreign[0] . '`(`id`)' . "\n";
                 } else {
-                    for($i = 0; $i < count($foreign); $i++) {
+                    for ($i = 0; $i < count($foreign); $i++) {
                         $query .= '    FOREIGN KEY (`id_' . $foreign[$i] . '`) REFERENCES `' . $foreign[$i] . '`(`id`)';
 
-                        if($i < (count($foreign) - 1)) {
+                        if ($i < (count($foreign) - 1)) {
                             $query .= ',';
                         }
 
@@ -475,13 +501,13 @@ class Entity {
 
             $query .= ') ENGINE=InnoDB DEFAULT CHARSET=' . substr($this->getTableCollation(), 0, strpos($this->getTableCollation(), '_')) . ' COLLATE=' . $this->getTableCollation();
 
-            if($autoIncrement) {
+            if ($autoIncrement) {
                 $query .= ' AUTO_INCREMENT=1';
             }
 
             $query .= ';';
 
-            if($queryOnly) {
+            if ($queryOnly) {
                 return $query;
             } else {
                 try {
