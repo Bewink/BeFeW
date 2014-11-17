@@ -265,6 +265,7 @@ class Entity {
                         }
                     } else {
                         $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` was found in table `' . $this->getTableName() . '` but doesn\'t exist in class `' . get_called_class() . '`';
+                        $errors[$index]['fix'] = 'Remove the field from the table';
                     }
                 } else {
                     $structure = $this->getFieldStructure($field['Field']);
