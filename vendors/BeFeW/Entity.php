@@ -383,8 +383,8 @@ class Entity {
         }
     }
 
-    public function createTable($query = false) {
-        if($query = false && $this->isTableCreated() == false) {
+    public function createTable($queryOnly = false) {
+        if($queryOnly == true OR $this->isTableCreated() == false) {
             global $DBH;
 
             foreach($this as $key => $value) {
@@ -480,7 +480,7 @@ class Entity {
 
             $query .= ';';
 
-            if($query) {
+            if($queryOnly) {
                 return $query;
             } else {
                 try {
