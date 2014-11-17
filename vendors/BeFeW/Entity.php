@@ -345,7 +345,7 @@ class Entity {
                 if(substr($key, 0, 5) != 'befew') {
                     if(!in_array($key, $fields)) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '`  ADD ' . $this->getFieldStructure($key);
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '`  ADD ' . $this->getFieldStructure($key, true);
 
                         if($repair) {
                             if(!$DBH->exec($errors[$index]['query'])) {
@@ -377,7 +377,7 @@ class Entity {
         $structure['name'] = (in_array($field, $this->befewLinks)) ? 'id_' . $field : $field;
 
         if($sql) {
-            return '`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL' : 'NOT NULL') . ' DEFAULT \'' . $structure['default'] . '\'' . (($structure['autoIncrement']) ? 'AUTO_INCREMENT' : '') . (($structure['primary']) ? 'PRIMARY KEY' : '');
+            return '`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL' : 'NOT NULL') . ' DEFAULT \'' . $structure['default'] . '\'' . (($structure['autoIncrement']) ? 'AUTO_INCREMENT' : '') . (($structure['index']) ? 'PRIMARY KEY' : '');
         } else {
             return $structure;
         }
