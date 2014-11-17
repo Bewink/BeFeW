@@ -4,7 +4,5 @@
  */
 
 /* Initializing */
-require('app/access.php');
-require('app/init.php');
-require('app/config.php');
+require('init.php');
 require('routing.php');
