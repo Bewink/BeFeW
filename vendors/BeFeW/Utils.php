@@ -60,4 +60,14 @@ class Utils {
     public static function getQueryWithValues($query, $values) {
         return strtr($query, array_map(function($v) {return '`' . $v . '`';}, $values));
     }
+
+    public static function searchInAssociativeArray($needle, $haystack, $name) {
+        foreach($haystack as $line) {
+            if($line[$name] === $needle) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

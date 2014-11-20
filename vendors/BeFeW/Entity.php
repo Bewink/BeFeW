@@ -22,6 +22,17 @@ class Entity
         'autoIncrement' => false,
         'comments' => null
     );
+    private $befewLinkAttributes = array(
+        'type' => 'int',
+        'length' => '(11)',
+        'default' => null,
+        'collation' => null,
+        'attributes' => null,
+        'null' => false,
+        'index' => null,
+        'autoIncrement' => false,
+        'comments' => null
+    );
     private $befewTableCollation = 'utf8_general_ci';
 
     protected $id;
@@ -251,6 +262,7 @@ class Entity
     {
         $errors = array();
         $index = 0;
+        $lastQueries = array();
 
         if (!$this->isTableCreated()) {
             $index = (isset($errors[$index])) ? $index + 1 : $index;
@@ -268,21 +280,37 @@ class Entity
             global $DBH;
             $query = $DBH->query('DESCRIBE ' . $this->getTableName());
             $datas = $query->fetchAll();
-            $fields = array();
+
+            foreach ($this as $key => $value) {
+                if (substr($key, 0, 5) != 'befew') {
+                    if (!Utils::searchInAssociativeArray((in_array($key, $this->befewLinks) ? 'id_' . $key : $key), $datas, 'Field')) {
+                        $index = (isset($errors[$index])) ? $index + 1 : $index;
+                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '`  ADD ' . $this->getFieldStructure($key, true);
+
+                        if(in_array($key, $this->befewLinks)) {
+                            $lastQueries[] = 'ALTER TABLE `' . $this->getTableName() . '` ADD  CONSTRAINT `' . $key . time() . '` FOREIGN KEY (`id_' . $key . '`) REFERENCES `' . $key . '`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;';
+                        }
+
+                        if ($repair) {
+                            $DBH->exec($errors[$index]['query']);
+                        } else {
+                            $errors[$index]['error'] = 'Database error: table `' . $this->getTableName() . '` is missing field `' . ((in_array($key, $this->befewLinks)) ? 'id_' . $key : $key) . '`';
+                            $errors[$index]['fix'] = 'Add the field in the table';
+                        }
+                    }
+                }
+            }
 
             for ($i = 0; $i < count($datas); $i++) {
                 $field = $datas[$i];
                 $fieldNameInClass = (substr($field['Field'], 0, 3) == 'id_') ? substr($field['Field'], 3) : $field['Field'];
-                $fields[] = $fieldNameInClass;
 
                 if (!property_exists($this, $fieldNameInClass)) {
                     $index = (isset($errors[$index])) ? $index + 1 : $index;
                     $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` DROP `' . $field['Field'] . '`';
 
                     if ($repair) {
-                        if (!$DBH->exec($errors[$index]['query'])) {
-                            $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` could not be deleted';
-                        }
+                        $DBH->exec($errors[$index]['query']);
                     } else {
                         $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` was found in table `' . $this->getTableName() . '` but doesn\'t exist in class `' . get_called_class() . '`';
                         $errors[$index]['fix'] = 'Remove the field `' . $field['Field'] . '` from the table';
@@ -290,14 +318,12 @@ class Entity
                 } else {
                     $structure = $this->getFieldStructure($field['Field']);
 
-                    if ($field['Type'] != $structure['type'] . $structure['length']) {
+                    if (substr($field['Field'], 0, 3) != 'id_' && $field['Type'] != $structure['type'] . $structure['length']) {
                         $index = (isset($errors[$index])) ? $index + 1 : $index;
                         $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
                         if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` type could not be modified';
-                            }
+                            $DBH->exec($errors[$index]['query']);
                         } else {
                             $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` is `' . $field['Type'] . '` in table `' . $this->getTableName() . '`, but is `' . $structure['type'] . $structure['length'] . '` in class `' . get_called_class() . '`';
                             $errors[$index]['fix'] = 'Modify the type of the field `' . $field['Field'] . '`. WARNING: This can cause data loss !';
@@ -308,9 +334,7 @@ class Entity
                         $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
                         if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: null option for field `' . $field['Field'] . '` could not be modified';
-                            }
+                            $DBH->exec($errors[$index]['query']);
                         } else {
                             $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` can ' . (($field['Null'] == 'NO') ? 'not be' : 'be') . ' null in table `' . $this->getTableName() . '`, but can ' . (($structure['null']) ? 'be' : 'not be') . ' null in class `' . get_called_class() . '`';
                             $errors[$index]['fix'] = 'Make the field `' . $field['Field'] . '` ' . (($structure['null']) ? 'NULL' : 'NOT NULL');
@@ -325,9 +349,7 @@ class Entity
                         }
 
                         if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` keys could not be modified';
-                            }
+                            $DBH->exec($errors[$index]['query']);
                         } else {
                             $errors[$index]['error'] = 'Database error: keys of field `' . $field['Field'] . '` in table `' . $this->getTableName() . '` doesn\'t match the class `' . get_called_class() . '`';
                             $errors[$index]['fix'] = 'Make the field `' . $field['Field'] . '` ' . (($structure['index'] == null) ? 'not `' . $field['Key'] . '`' : $structure['index']);
@@ -338,9 +360,7 @@ class Entity
                         $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
                         if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` default value could not be modified';
-                            }
+                            $DBH->exec($errors[$index]['query']);
                         } else {
                             $errors[$index]['error'] = 'Database error: default values in table `' . $this->getTableName() . '` and in class `' . get_called_class() . '` doesn\'t match for field `' . $field['Field'] . '`';
                             $errors[$index]['fix'] = 'Modify the field `' . $field['Field'] . '` default value';
@@ -351,9 +371,7 @@ class Entity
                         $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '` CHANGE `' . $field['Field'] . '` ' . $this->getFieldStructure($fieldNameInClass, true);
 
                         if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: auto increment for field `' . $field['Field'] . '` could not be ' . (($structure['autoIncrement']) ? 'set' : 'removed');
-                            }
+                            $DBH->exec($errors[$index]['query']);
                         } else {
                             $errors[$index]['error'] = 'Database error: field `' . $field['Field'] . '` is ' . (($field['Extra'] == 'auto_increment') ? 'set' : 'not set') . ' to auto increment in table `' . $this->getTableName() . '`, but is ' . (($structure['autoIncrement']) ? 'set' : 'not set') . ' to auto increment in class `' . get_called_class() . '`';
                             $errors[$index]['fix'] = (($structure['autoIncrement']) ? 'Set' : 'Remove') . ' auto increment for the field `' . $field['Field'] . '`';
@@ -361,27 +379,11 @@ class Entity
                     }
                 }
             }
+        }
 
-            foreach ($this as $key => $value) {
-                if (substr($key, 0, 5) != 'befew') {
-                    if (!in_array($key, $fields)) {
-                        $index = (isset($errors[$index])) ? $index + 1 : $index;
-                        $errors[$index]['query'] = 'ALTER TABLE `' . $this->getTableName() . '`  ADD ' . $this->getFieldStructure($key, true);
-
-                        if(in_array($key, $this->befewLinks)) {
-                            $errors[$index]['query'] .= ';ALTER TABLE `' . $this->getTableName() . '` ADD  CONSTRAINT `' . $key . time() . '` FOREIGN KEY (`id_' . $key . '`) REFERENCES `' . $key . '`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;';
-                        }
-
-                        if ($repair) {
-                            if (!$DBH->exec($errors[$index]['query'])) {
-                                $errors[$index]['error'] = 'Process error: field `' . $field['Field'] . '` could not be added : ' . "\n" . $DBH->errorInfo();
-                            }
-                        } else {
-                            $errors[$index]['error'] = 'Database error: table `' . $this->getTableName() . '` is missing field `' . ((in_array($key, $this->befewLinks)) ? 'id_' . $key : $key) . '`';
-                            $errors[$index]['fix'] = 'Add the field in the table';
-                        }
-                    }
-                }
+        if($repair) {
+            foreach ($lastQueries as $query) {
+                $DBH->exec($query);
             }
         }
 
@@ -390,20 +392,25 @@ class Entity
 
     public function getFieldStructure($field, $sql = false)
     {
-        if (Utils::getVar($this->befewAttributes[$field]) == null) {
-            $structure = $this->befewDefaultAttributes;
+        if(in_array($field, $this->befewLinks)) {
+            $structure = $this->befewLinkAttributes;
+            $structure['name'] = 'id_' . $field;
         } else {
-            $structure = array_merge($this->befewDefaultAttributes, $this->befewAttributes[$field]);
-        }
+            if (Utils::getVar($this->befewAttributes[$field]) == null) {
+                $structure = $this->befewDefaultAttributes;
+            } else {
+                $structure = array_merge($this->befewDefaultAttributes, $this->befewAttributes[$field]);
+            }
 
-        if (Utils::getVar($structure['length']) == null) {
-            $structure['length'] = Utils::getSQLDefaultLengthForType($structure['type']);
-        }
+            if (Utils::getVar($structure['length']) == null) {
+                $structure['length'] = Utils::getSQLDefaultLengthForType($structure['type']);
+            }
 
-        $structure['name'] = (in_array($field, $this->befewLinks)) ? 'id_' . $field : $field;
+            $structure['name'] = $field;
+        }
 
         if ($sql) {
-            return '`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL ' : 'NOT NULL ') . (($structure['default'] != null) ? ' DEFAULT \'' . $structure['default'] . '\' ' : '') . (($structure['autoIncrement']) ? 'AUTO_INCREMENT ' : '') . (($structure['index']) ? 'PRIMARY KEY' : '');
+            return trim('`' . $structure['name'] . '` ' . $structure['type'] . $structure['length'] . ' ' . (($structure['null']) ? 'NULL ' : 'NOT NULL ') . (($structure['default'] != null) ? ' DEFAULT \'' . $structure['default'] . '\' ' : '') . (($structure['autoIncrement']) ? 'AUTO_INCREMENT ' : '') . (($structure['index']) ? 'PRIMARY KEY' : ''));
         } else {
             return $structure;
         }
