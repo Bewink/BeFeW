@@ -1,4 +1,4 @@
-<?php use vendors\BeFeW\Utils as Utils; ?>
+<?php use vendor\Befew\Utils as Utils; ?>
 <!DOCTYPE html>
 <html>
     <head>

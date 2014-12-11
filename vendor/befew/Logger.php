@@ -1,6 +1,6 @@
 <?php
 
-namespace vendors\BeFeW;
+namespace vendor\Befew;
 
 class Logger {
     public static function info($message, $die = false) {

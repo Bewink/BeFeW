@@ -5,4 +5,4 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'your database username here');
 define('DB_PASSWORD', 'your database password here');
 
-define('BEFEW_BASE_URL', '/');
+define('BEFEW_BASE_URL', DIRECTORY_SEPARATOR);

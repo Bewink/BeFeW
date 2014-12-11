@@ -1,19 +1,14 @@
 <?php
 
-use vendors\BeFeW\Response as Response;
-use vendors\BeFeW\Template as Template;
+namespace src\Home;
 
-/* Use $page for the switch, and $tplpath for the template engine */
-switch($page) {
-    case '':
-    case 'home':
-        $tpl = new Template($tplpath);
-        $tpl->setTitle('| Home');
-        $tpl->addStyle('default.css');
+use vendor\Befew\Template as Template;
+use vendor\Befew\Controller as Controller;
 
-        $tpl->render('index.php');
-        break;
+class HomeController extends Controller {
+    public function indexAction() {
+        $tpl = new Template($this->tplpath);
 
-    default:
-        Response::throwStatus(404);
+        $tpl->render('index.twig');
+    }
 }

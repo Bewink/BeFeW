@@ -1,6 +1,6 @@
 <?php
 
-namespace vendors\BeFeW;
+namespace vendor\Befew;
 
 class Utils {
     private static $SQLMAP = [

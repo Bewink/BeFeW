@@ -1,6 +1,6 @@
 <?php
 
-namespace vendors\BeFeW;
+namespace vendor\Befew;
 
 class Response {
     public static function throwStatus($code) {

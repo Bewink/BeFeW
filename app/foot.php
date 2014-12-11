@@ -1,5 +1,5 @@
 <?php
-    use vendors\BeFeW\Utils as Utils;
+    use vendor\Befew\Utils as Utils;
     if(Utils::getVar($befewFootJavascripts) != null) {
         foreach($befewFootJavascripts as $befewFootJavascript) {
             ?>
