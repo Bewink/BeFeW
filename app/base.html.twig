@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title>BeFeW{% block title %}{% endblock %}</title>
+
+    {% block stylesheets %}{% endblock %}
+    {% block scripts %}{% endblock %}
+
+    {% for path in styles %}
+    <link rel="stylesheet" type="text/css" href="{{ path }}" />
+    {% endfor %}
+
+    {% for path in scripts %}
+    <script type="text/javascript" src="{{ path }}"></script>
+    {% endfor %}
+</head>
+<body>
+{% block content %}{% endblock %}
+
+{% for path in footScripts %}
+    <script type="text/javascript" src="{{ path }}"></script>
+{% endfor %}
+</body>
+</html>
