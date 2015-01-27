@@ -1,6 +1,6 @@
 <?php
 
-namespace vendor\Befew;
+namespace vendor\befew;
 
 class Request extends Utils {
     private $url;

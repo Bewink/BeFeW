@@ -1,2 +1,8 @@
 *.iml
 .idea
+
+composer.phar
+composer.lock
+
+vendor
+!vendor/befew

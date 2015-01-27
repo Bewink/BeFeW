@@ -2,7 +2,7 @@
 
 namespace src\Home;
 
-use vendor\Befew\Controller as Controller;
+use vendor\befew\Controller as Controller;
 
 class HomeController extends Controller {
     public function indexAction() {

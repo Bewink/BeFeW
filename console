@@ -1,6 +1,6 @@
 <?php
 require_once('init.php');
-use vendor\Befew\Utils as Utils;
+use vendor\befew\Utils as Utils;
 
 
 

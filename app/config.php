@@ -3,6 +3,9 @@ global $DBH;
 
 define('DEBUG', true);
 define('CACHE_TWIG', 'cache' . DIRECTORY_SEPARATOR . 'twig');
+define('STYLES_FOLDER', 'styles');
+define('TEMPLATES_FOLDER', 'templates');
+define('SCRIPTS_FOLDER', 'scripts');
 
 if(DEBUG) {
     error_reporting(E_ALL);

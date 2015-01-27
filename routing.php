@@ -1,7 +1,7 @@
 <?php
 
-use vendor\Befew\Request as Request;
-use vendor\Befew\Response as Response;
+use vendor\befew\Request as Request;
+use vendor\befew\Response as Response;
 
 $url = Request::getGet('page', 'index', true);
 

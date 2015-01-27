@@ -1,6 +1,6 @@
 <?php
 
-namespace vendor\Befew;
+namespace vendor\befew;
 
 class Template {
     private $twig;
@@ -22,20 +22,20 @@ class Template {
     }
 
     public function addCSS($path) {
-        array_push($this->styles, $this->path->getPathWithWebSeparators() . 'Styles/' . $path);
+        array_push($this->styles, $this->path->getPathWithWebSeparators() . STYLES_FOLDER . '/' . $path);
     }
 
     public function addJS($path, $head = true) {
         if($head) {
-            array_push($this->scripts, $this->path->getPathWithWebSeparators() . 'Script/' . $path);
+            array_push($this->scripts, $this->path->getPathWithWebSeparators() . SCRIPTS_FOLDER . '/' . $path);
         } else {
-            array_push($this->footScripts, $this->path->getPathWithWebSeparators() . 'Script/' . $path);
+            array_push($this->footScripts, $this->path->getPathWithWebSeparators() . SCRIPTS_FOLDER . '/' . $path);
         }
     }
 
     public function render($file, $vars = array()) {
         echo $this->twig->render(
-            $this->path . 'Templates' . DIRECTORY_SEPARATOR . $file,
+            $this->path . TEMPLATES_FOLDER . DIRECTORY_SEPARATOR . $file,
             array_merge(
                 $vars,
                 array(
