@@ -9,7 +9,7 @@
     </target>
     <target name="delete">
         <delete dir="${deploydir}/src" />
-        <delete dir="${deploydir}/vendors" />
+        <delete dir="${deploydir}/vendor" />
         <delete>
             <fileset dir="${deploydir}">
                 <include name="*"/>
