@@ -5,13 +5,16 @@ namespace vendor\Befew;
 class Controller {
     protected $request;
     protected $tplpath;
+    protected $template;
 
     public function __construct($url, $action) {
         $action = $action . 'Action';
         $reflector = new \ReflectionClass(get_class($this));
 
         $fn = DIRECTORY_SEPARATOR . $reflector->getNamespaceName();
-        $this->tplpath = str_replace('/', DIRECTORY_SEPARATOR, $fn) . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . 'Templates' . DIRECTORY_SEPARATOR;
+        $this->tplpath = str_replace('/', DIRECTORY_SEPARATOR, $fn) . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR;
+
+        $this->template = new Template($this->tplpath);
 
         $this->request = new Request($url);
 
